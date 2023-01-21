@@ -11,13 +11,15 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Form(object):
-    def setupUi(self, Form):
+class UiForm(object):
+    def setup_ui(self, Form):
         Form.setObjectName("Form")
         Form.resize(800, 600)
         Form.setMinimumSize(QtCore.QSize(800, 600))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("logo/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(
+            QtGui.QPixmap("logo/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off
+        )
         Form.setWindowIcon(icon)
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout_6.setContentsMargins(3, 3, 3, 3)
@@ -89,7 +91,9 @@ class Ui_Form(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.horizontalLayout_4.addWidget(self.label)
-        spacerItem = QtWidgets.QSpacerItem(533, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem = QtWidgets.QSpacerItem(
+            533, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.horizontalLayout_4.addItem(spacerItem)
         self.RemoveAllData = QtWidgets.QPushButton(self.frame_3)
         self.RemoveAllData.setMaximumSize(QtCore.QSize(30, 30))
@@ -305,7 +309,9 @@ class Ui_Form(object):
         self.RemoveCard.setObjectName("RemoveCard")
         self.verticalLayout.addWidget(self.RemoveCard)
         self.gridLayout.addWidget(self.frame, 1, 0, 2, 1, QtCore.Qt.AlignTop)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
         self.gridLayout.addItem(spacerItem1, 1, 3, 1, 1)
         self.NumberDownloadedLinks = QtWidgets.QLabel(Form)
         font = QtGui.QFont()
@@ -317,12 +323,12 @@ class Ui_Form(object):
         self.gridLayout.addWidget(self.NumberDownloadedLinks, 3, 9, 1, 1)
         self.verticalLayout_6.addLayout(self.gridLayout)
 
-        self.retranslateUi(Form)
+        self.retranslate_ui(Form)
         self.Tables.setCurrentIndex(0)
         self.toolBox.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
-    def retranslateUi(self, Form):
+    def retranslate_ui(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Parser Cards MTG"))
         self.SiteList.setItemText(0, _translate("Form", "Star City Games"))
@@ -345,7 +351,9 @@ class Ui_Form(object):
         item.setText(_translate("Form", "Цена в рублях"))
         item = self.TableStarCityGames.horizontalHeaderItem(5)
         item.setText(_translate("Form", "Ссылка"))
-        self.Tables.setTabText(self.Tables.indexOf(self.tab_4), _translate("Form", "Star City Games"))
+        self.Tables.setTabText(
+            self.Tables.indexOf(self.tab_4), _translate("Form", "Star City Games")
+        )
         item = self.TableGoldFish.horizontalHeaderItem(0)
         item.setText(_translate("Form", "Количество"))
         item = self.TableGoldFish.horizontalHeaderItem(1)
@@ -358,32 +366,40 @@ class Ui_Form(object):
         item.setText(_translate("Form", "Цена в рублях"))
         item = self.TableGoldFish.horizontalHeaderItem(5)
         item.setText(_translate("Form", "Ссылка"))
-        self.Tables.setTabText(self.Tables.indexOf(self.tab_3), _translate("Form", "Gold Fish"))
+        self.Tables.setTabText(
+            self.Tables.indexOf(self.tab_3), _translate("Form", "Gold Fish")
+        )
         self.label_3.setText(_translate("Form", "Курс доллара:"))
         self.AddCards.setText(_translate("Form", "Добавить"))
         self.label_4.setText(_translate("Form", "Количество:"))
         self.label_5.setText(_translate("Form", "Ссылки для парсинга:"))
-        self.LoadDataCards.setText(_translate("Form", "Загрузить данные из Excel таблицы"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page), _translate("Form", "Добавление карт"))
+        self.LoadDataCards.setText(
+            _translate("Form", "Загрузить данные из Excel таблицы")
+        )
+        self.toolBox.setItemText(
+            self.toolBox.indexOf(self.page), _translate("Form", "Добавление карт")
+        )
         self.SaveToExcel.setText(_translate("Form", "Excel"))
-        self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("Form", "Экспорт"))
+        self.toolBox.setItemText(
+            self.toolBox.indexOf(self.page_2), _translate("Form", "Экспорт")
+        )
         self.label_6.setText(_translate("Form", "Ошибки:"))
         self.PriceReloadedCard.setText(_translate("Form", "Обновить цену карты"))
         self.RemoveCard.setText(_translate("Form", "Удалить карту из таблицы"))
         self.NumberDownloadedLinks.setText(_translate("Form", "0/0"))
 
-class MyWin(QtWidgets.QWidget, Ui_Form):
+
+class MyWin(QtWidgets.QWidget, UiForm):
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
+        self.setup_ui(self)
 
-    def closeEvent(self, event):
+    def close_event(self):
         rate = self.DollarExchangeRate.text()
         list_index = self.SiteList.currentIndex()
         tables_index = self.Tables.currentIndex()
 
-        file = open('src/initiation/data.config', 'w')
-        file.write(f'DollarExchangeRate: {rate}\n')
-        file.write(f'Tables: {tables_index}\n')
-        file.write(f'SiteList: {list_index}')
-        file.close()
+        with open("src/initiation/data.config", "w") as file:
+            file.write(f"DollarExchangeRate: {rate}\n")
+            file.write(f"Tables: {tables_index}\n")
+            file.write(f"SiteList: {list_index}")
