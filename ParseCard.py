@@ -73,7 +73,7 @@ def thread_add_cards() -> None:
 # Обновление цены на карты
 def event_price_update() -> None:
     bd_table, ui_table = get_site_by_index(ui.Tables.currentIndex())
-    rate = int(validate_price())
+    rate = float(validate_price())
     ui_label = ui.NumberDownloadedLinks
     update_cards_price(rate, ui_table, bd_table, ui_label)
 
@@ -86,10 +86,10 @@ def thread_update_price() -> None:
 
 # Перерасчёт цен
 def event_price_recalculation() -> None:
-    rate = validate_price()
+    rate = float(validate_price())
     ui_by_table_name = get_ui_table_by_name()
-    for table_name, table_ui in ui_by_table_name.items():
-        recalculation(rate=rate, table_name=table_name, ui_table=table_ui)
+    for table_name, ui_table in ui_by_table_name.items():
+        recalculation(rate, ui_table, table_name)
 
 
 # Обновление цены одной карты

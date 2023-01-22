@@ -58,7 +58,7 @@ def add_cards(ui: MyWin, cards_number, links, rate, length):
 
 
 # Изменение цены карт
-def recalculation(rate, ui_table, table_name):
+def recalculation(rate: float, ui_table: QTableWidget, table_name: str):
     rows = ui_table.rowCount()
     for row in range(rows):
         url = ui_table.item(row, 5).text()
