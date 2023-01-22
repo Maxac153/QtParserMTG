@@ -1,16 +1,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QTableWidget
 
-class TablesUI:
-    def __init__(self, data_card = ()):
+
+class TableUI:
+    def __init__(self, data_card=()):
         self.data_card = data_card
 
     def add_card(self, ui_table):
-        rowPosition = ui_table.rowCount()
-        ui_table.insertRow(rowPosition)
+        row_position = ui_table.rowCount()
+        ui_table.insertRow(row_position)
 
         for i in range(len(self.data_card)):
-            ui_table.setItem(rowPosition, i, QtWidgets.QTableWidgetItem(self.data_card[i]))
+            ui_table.setItem(
+                row_position, i, QtWidgets.QTableWidgetItem(self.data_card[i])
+            )
 
     def remove_card(self, ui_table, row):
         ui_table.removeRow(row)
@@ -28,8 +31,8 @@ class TablesUI:
 
     def load_data_card(self, ui_table):
         for item in self.data_card:
-            rowPosition = ui_table.rowCount()
-            ui_table.insertRow(rowPosition)
+            row_position = ui_table.rowCount()
+            ui_table.insertRow(row_position)
 
             for i in range(len(item)):
-                ui_table.setItem(rowPosition, i, QtWidgets.QTableWidgetItem(item[i]))
+                ui_table.setItem(row_position, i, QtWidgets.QTableWidgetItem(item[i]))
