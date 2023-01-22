@@ -1,14 +1,45 @@
 import math
 from typing import Type
 
+from ParseCard import get_ui_table_by_name
 from src.dataBase.data_base import DataBase
 from src.table.tables import TableUI
-from src.parse.parse import StarCityGamesParse, GoldFishParse
+from src.parse.parse import StarCityGamesParse, GoldFishParse, Parse
 from ui.ui_imagedialog import MyWin
 from PyQt5.QtWidgets import QTableWidget
 
 
-def add_cards(ui: MyWin, cards_number, links, rate, length):
+def get_classes_by_name() -> dict[str, Type[GoldFishParse | StarCityGamesParse]]:
+    return {"Star_City_Games": StarCityGamesParse, "Gold_Fish": GoldFishParse}
+
+
+def parse_and_append_to_tables(
+    ui: MyWin, card_number: int, link: str, rate: float
+) -> None:
+    card = Parse()
+    card_parses_by_name = get_classes_by_name()
+    site_name = ui.SiteList.currentText()
+    site_name_with_earth = site_name.replace(" ", "_")
+    try:
+        card = card_parses_by_name[site_name_with_earth](link, rate, card_number)
+        card.parse()
+    except Exception:
+        ui.BrokenLinks.append(link)
+
+    try:
+        card_data = card.get_data_card()
+        db_table = DataBase(card_data)
+        db_table.add_card(site_name_with_earth)
+
+        ui_table = TableUI(card_data)
+        ui_table.add_card(get_ui_table_by_name()[site_name_with_earth])
+    except Exception:
+        ui.BrokenLinks.append("Ошибка добавления данных о карте (Уже есть в БД).")
+
+
+def add_cards(
+    ui: MyWin, cards_number: list[int], links: list[str], rate: float, length: int
+) -> None:
     len_links = len(links)
     len_number_cards = len(cards_number)
 
@@ -17,43 +48,7 @@ def add_cards(ui: MyWin, cards_number, links, rate, length):
         return
 
     for count in range(length):
-        if ui.SiteList.currentText() == "Star City Games":
-            try:
-                card = StarCityGamesParse(cards_number[count], links[count], rate)
-                card.parse()
-
-                try:
-                    tabel_bd = DataBase(card.get_data_card())
-                    tabel_bd.add_card("Star_City_Games")
-
-                    tabel_ui = TableUI(card.get_data_card())
-                    tabel_ui.add_card(ui.TableStarCityGames)
-                except Exception:  # тут надо указать какую ошибку хочешь отловить
-                    ui.BrokenLinks.append(
-                        "Ошибка добавления данных о карте (Уже есть в БД)."
-                    )
-            except Exception:
-                ui.BrokenLinks.append(links[count])
-
-        elif ui.SiteList.currentText() == "Gold Fish":
-            try:
-                card = GoldFishParse(cards_number[count], links[count], rate)
-                card.parse()
-
-                try:
-                    tabel_bd = DataBase(card.get_data_card())
-                    tabel_bd.add_card("Gold_Fish")
-
-                    tabel_ui = TableUI(card.get_data_card())
-                    tabel_ui.add_card(ui.TableGoldFish)
-                except Exception:
-                    ui.BrokenLinks.append(
-                        "Ошибка добавления данных о карте (Уже есть в БД)."
-                    )
-            except Exception:
-                ui.BrokenLinks.append(links[count])
-        else:
-            ui.BrokenLinks.append("Неизвестный сайт")
+        parse_and_append_to_tables(ui, cards_number[count], links[count], rate)
         ui.NumberDownloadedLinks.setText(f"{count + 1}/{length}")
 
 
@@ -73,10 +68,6 @@ def recalculation(rate: float, ui_table: QTableWidget, table_name: str):
 
 
 # Обновление цены
-def get_classes_by_name() -> dict[str, Type[GoldFishParse | StarCityGamesParse]]:
-    return {"Star_City_Games": StarCityGamesParse, "Gold_Fish": GoldFishParse}
-
-
 def update_prices(
     rate: float, row: int, table_name: str, ui_table: QTableWidget, url: str
 ) -> None:
@@ -93,7 +84,6 @@ def price_update_card(rate: float, ui_table: QTableWidget, table_name: str) -> N
     row = ui_table.currentRow()
     if row > -1:
         url = ui_table.item(row, 5).text()
-
         update_prices(rate, row, table_name, ui_table, url)
 
 
@@ -104,9 +94,7 @@ def update_cards_price(
     rows = ui_table.rowCount()
     for row in range(rows):
         url = ui_table.item(row, 5).text()
-
         update_prices(rate, row, table_name, ui_table, url)
-
         ui_label.setText(f"{row + 1}/{rows}")
 
 
