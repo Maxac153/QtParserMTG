@@ -1,6 +1,5 @@
 import sqlite3 as sq
 
-
 class DataBase:
     def __init__(self, data_card=()):
         self.data_card = data_card

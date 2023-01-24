@@ -1,7 +1,6 @@
 from src.dataBase.data_base import DataBase
 from src.table.tables import TableUI
 
-
 # Загрузка данных из БД в таблицу
 def load_data_in_table(table_name, table_ui):
     data = DataBase(())
@@ -9,7 +8,6 @@ def load_data_in_table(table_name, table_ui):
 
     table = TableUI(data_card)
     table.load_data_card(table_ui)
-
 
 def load_data_config(ui_rate, ui_tables, ui_list):
     with open("src/initiation/data.config", "r") as file:

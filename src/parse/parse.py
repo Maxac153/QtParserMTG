@@ -2,7 +2,7 @@ import abc
 
 from bs4 import BeautifulSoup
 import requests
-
+import math
 
 class Parse:
     name: str
@@ -15,7 +15,7 @@ class Parse:
 
     @property
     def price_ruble(self) -> float:
-        return self.price_dollar * self.rate
+        return math.ceil(self.price_dollar) * self.rate
 
     def __init__(self, url: str = "", rate: float = 0, card_number: int = 0):
         self.number_card = card_number

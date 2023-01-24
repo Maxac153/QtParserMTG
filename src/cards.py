@@ -1,25 +1,28 @@
 import math
+import multiprocessing
+import os
 from typing import Type
 
-from ParseCard import get_ui_table_by_name
 from src.dataBase.data_base import DataBase
 from src.table.tables import TableUI
 from src.parse.parse import StarCityGamesParse, GoldFishParse, Parse
 from ui.ui_imagedialog import MyWin
 from PyQt5.QtWidgets import QTableWidget
 
+def get_ui_table_by_name(ui) -> dict[str, QTableWidget]:
+    return {"Star_City_Games": ui.TableStarCityGames, "Gold_Fish": ui.TableGoldFish}
 
 def get_classes_by_name() -> dict[str, Type[GoldFishParse | StarCityGamesParse]]:
     return {"Star_City_Games": StarCityGamesParse, "Gold_Fish": GoldFishParse}
 
-
 def parse_and_append_to_tables(
     ui: MyWin, card_number: int, link: str, rate: float
 ) -> None:
-    card = Parse()
+    card = Parse(url=link, rate=rate, card_number=card_number)
     card_parses_by_name = get_classes_by_name()
     site_name = ui.SiteList.currentText()
     site_name_with_earth = site_name.replace(" ", "_")
+
     try:
         card = card_parses_by_name[site_name_with_earth](link, rate, card_number)
         card.parse()
@@ -32,10 +35,9 @@ def parse_and_append_to_tables(
         db_table.add_card(site_name_with_earth)
 
         ui_table = TableUI(card_data)
-        ui_table.add_card(get_ui_table_by_name()[site_name_with_earth])
+        ui_table.add_card(get_ui_table_by_name(ui)[site_name_with_earth])
     except Exception:
         ui.BrokenLinks.append("Ошибка добавления данных о карте (Уже есть в БД).")
-
 
 def add_cards(
     ui: MyWin, cards_number: list[int], links: list[str], rate: float, length: int
@@ -51,7 +53,6 @@ def add_cards(
         parse_and_append_to_tables(ui, cards_number[count], links[count], rate)
         ui.NumberDownloadedLinks.setText(f"{count + 1}/{length}")
 
-
 # Изменение цены карт
 def recalculation(rate: float, ui_table: QTableWidget, table_name: str):
     rows = ui_table.rowCount()
@@ -66,7 +67,6 @@ def recalculation(rate: float, ui_table: QTableWidget, table_name: str):
         table = DataBase(price_ruble)
         table.recalculation(table_name, url)
 
-
 # Обновление цены
 def update_prices(
     rate: float, row: int, table_name: str, ui_table: QTableWidget, url: str
@@ -79,13 +79,11 @@ def update_prices(
     table = TableUI(card.get_data_card_prices())
     table.update_price_card(ui_table, row)
 
-
 def price_update_card(rate: float, ui_table: QTableWidget, table_name: str) -> None:
     row = ui_table.currentRow()
     if row > -1:
         url = ui_table.item(row, 5).text()
         update_prices(rate, row, table_name, ui_table, url)
-
 
 # Обновление цен
 def update_cards_price(
@@ -97,7 +95,6 @@ def update_cards_price(
         update_prices(rate, row, table_name, ui_table, url)
         ui_label.setText(f"{row + 1}/{rows}")
 
-
 # Удаление одной карты
 def remove_card(ui_table: QTableWidget, table_name: str) -> None:
     row = ui_table.currentRow()
@@ -107,7 +104,6 @@ def remove_card(ui_table: QTableWidget, table_name: str) -> None:
 
         table = TableUI()
         table.remove_card(ui_table, row)
-
 
 # Удаление всех карт
 def remove_cards(table_name: str, ui_table: QTableWidget) -> None:

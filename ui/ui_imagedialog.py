@@ -394,12 +394,12 @@ class MyWin(QtWidgets.QWidget, UiForm):
         super().__init__()
         self.setup_ui(self)
 
-    def close_event(self):
+    def closeEvent(self, event):
         rate = self.DollarExchangeRate.text()
         list_index = self.SiteList.currentIndex()
         tables_index = self.Tables.currentIndex()
 
         with open("src/initiation/data.config", "w") as file:
-            file.write(f"DollarExchangeRate: {rate}\n")
-            file.write(f"Tables: {tables_index}\n")
-            file.write(f"SiteList: {list_index}")
+            file.write(f'DollarExchangeRate: {rate}\n')
+            file.write(f'Tables: {tables_index}\n')
+            file.write(f'SiteList: {list_index}')

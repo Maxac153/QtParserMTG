@@ -11,9 +11,7 @@ class TableUI:
         ui_table.insertRow(row_position)
 
         for i in range(len(self.data_card)):
-            ui_table.setItem(
-                row_position, i, QtWidgets.QTableWidgetItem(self.data_card[i])
-            )
+            ui_table.setItem(row_position, i, QtWidgets.QTableWidgetItem(str(self.data_card[i])))
 
     def remove_card(self, ui_table, row):
         ui_table.removeRow(row)
