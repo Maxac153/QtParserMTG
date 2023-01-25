@@ -7,127 +7,132 @@ from PyQt5.QtWidgets import QApplication, QFileDialog, QTableWidget
 from threading import Thread
 
 from ui.ui_imagedialog import MyWin
-from src.excel.excel import save_to_excel, load_data_from_excel
+from src.excel.excel import ExcelHandler
 from src.initiation.initiation import load_data_in_table, load_data_config
-from src.cards import (
-    add_cards,
-    recalculation,
-    update_cards_price,
-    price_update_card,
-    remove_card,
-    remove_cards
-)
+from src.cards import CardManipulator
 
 DOLLAR_DEFAULT_PRICE = 60.0
+
 
 class Sites(IntEnum):
     Star_City_Games = 0
     Gold_Fish = 1
 
-def get_site_by_index(index: int) -> tuple[str, QTableWidget]:
-    ui_table = get_ui_table_by_name()
-    tables = {site.value: (site.name, ui_table[site.name]) for site in Sites}
-    return tables[index]
 
-def get_ui_table_by_name() -> dict[str, QTableWidget]:
-    return {"Star_City_Games": ui.TableStarCityGames, "Gold_Fish": ui.TableGoldFish}
+class Eventor:
+    manipulator: CardManipulator
+    ui: MyWin
+    excel_handler: ExcelHandler
 
-def validate_price() -> float:
-    price = ui.DollarExchangeRate.text()
-    if price.isdigit():
-        return float(price)
-    return DOLLAR_DEFAULT_PRICE
+    def __init__(self, ui: MyWin):
+        self.ui = ui
+        self.manipulator = CardManipulator(self.ui)
+        self.excel_handler = ExcelHandler(self.ui)
 
-# Загрузка данных в таблицы
-def load_data() -> None:
-    ui_by_table_name = get_ui_table_by_name()
-    for table_name, table_ui in ui_by_table_name.items():
-        load_data_in_table(table_name=table_name, table_ui=table_ui)
+    def get_site_by_index(self, index: int) -> tuple[str, QTableWidget]:
+        ui_table = self.manipulator.get_ui_table_by_name()
+        tables = {site.value: (site.name, ui_table[site.name]) for site in Sites}
+        return tables[index]
 
-    load_data_config(
-        ui_rate=ui.DollarExchangeRate, ui_tables=ui.Tables, ui_list=ui.SiteList
-    )
+    @staticmethod
+    def _validate_price() -> float:
+        price = ui.DollarExchangeRate.text()
+        if price.isdigit():
+            return float(price)
+        return DOLLAR_DEFAULT_PRICE
 
-# Добавление карт в UI и DB
-def event_add_cards() -> None:
-    number_cards = ui.NumberCards.toPlainText().split()
-    links = ui.LinkCards.toPlainText().split()
-    rate = validate_price()
-    length = len(number_cards)
-    add_cards(ui, number_cards, links, rate, length)
+    # Загрузка данных в таблицы
+    def load_data(self) -> None:
+        ui_by_table_name = self.manipulator.get_ui_table_by_name()
+        for table_name, table_ui in ui_by_table_name.items():
+            load_data_in_table(table_name=table_name, table_ui=table_ui)
 
-# Создание потока для добавления карт
-def thread_add_cards() -> None:
-    ui.BrokenLinks.clear()
-    thread = Thread(target=event_add_cards)
-    thread.start()
+        load_data_config(
+            ui_rate=ui.DollarExchangeRate, ui_tables=ui.Tables, ui_list=ui.SiteList
+        )
 
-# Обновление цены на карты
-def event_price_update() -> None:
-    bd_table, ui_table = get_site_by_index(ui.Tables.currentIndex())
-    rate = float(validate_price())
-    ui_label = ui.NumberDownloadedLinks
-    update_cards_price(rate, ui_table, bd_table, ui_label)
+    # Добавление карт в UI и DB
+    def _event_add_cards(self) -> None:
+        number_cards = ui.NumberCards.toPlainText().split()
+        links = ui.LinkCards.toPlainText().split()
+        rate = self._validate_price()
+        length = len(number_cards)
+        self.manipulator.add_cards(number_cards, links, rate, length)
 
-# Создание потока для обновление цен
-def thread_update_price() -> None:
-    thread = Thread(target=event_price_update)
-    thread.start()
+    # Создание потока для добавления карт
+    def thread_add_cards(self) -> None:
+        ui.BrokenLinks.clear()
+        thread = Thread(target=self._event_add_cards)
+        thread.start()
 
-# Перерасчёт цен
-def event_price_recalculation() -> None:
-    rate = float(validate_price())
-    ui_by_table_name = get_ui_table_by_name()
-    for table_name, ui_table in ui_by_table_name.items():
-        recalculation(rate, ui_table, table_name)
+    # Обновление цены на карты
+    def _event_price_update(self) -> None:
+        bd_table, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
+        rate = float(self._validate_price())
+        ui_label = ui.NumberDownloadedLinks
+        self.manipulator.update_cards_price(rate, ui_table, bd_table, ui_label)
 
-# Обновление цены одной карты
-def event_update_card() -> None:
-    rate = int(validate_price())
-    table_name, ui_table = get_site_by_index(ui.Tables.currentIndex())
-    price_update_card(rate, ui_table, table_name)
+    # Создание потока для обновление цен
+    def thread_update_price(self) -> None:
+        thread = Thread(target=self._event_price_update)
+        thread.start()
 
-# Уделение одной карты
-def event_remove_card() -> None:
-    table_name, ui_table = get_site_by_index(ui.Tables.currentIndex())
-    remove_card(ui_table, table_name)
+    # Перерасчёт цен
+    def event_price_recalculation(self) -> None:
+        rate = float(self._validate_price())
+        ui_by_table_name = self.manipulator.get_ui_table_by_name()
+        for table_name, ui_table in ui_by_table_name.items():
+            self.manipulator.recalculation(rate, ui_table, table_name)
 
-# Удаление всех карт из Таблиц
-def event_remove_all_cards() -> None:
-    ui_by_table_name = get_ui_table_by_name()
-    for table_name, table_ui in ui_by_table_name.items():
-        remove_cards(table_name=table_name, ui_table=table_ui)
+    # Обновление цены одной карты
+    def event_update_card(self) -> None:
+        rate = int(self._validate_price())
+        table_name, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
+        self.manipulator.price_update_card(rate, ui_table, table_name)
 
-# Сохранение данных в Excel
-def event_save_to_excel() -> int | None:
-    file_name = QFileDialog.getSaveFileName()[0] + ".xlsx"
-    if file_name == "":
-        return 0
-    save_to_excel(file_name, ui)
+    # Уделение одной карты
+    def event_remove_card(self) -> None:
+        table_name, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
+        self.manipulator.remove_card(ui_table, table_name)
 
-# Загрузка данных из Excel
-def event_load_data_to_excel() -> int | None:
-    file_name = QFileDialog.getOpenFileName()[0]
-    if file_name == "":
-        return 0
-    load_data_from_excel(file_name, ui)
-    thread_add_cards()
+    # Удаление всех карт из Таблиц
+    def event_remove_all_cards(self) -> None:
+        ui_by_table_name = self.manipulator.get_ui_table_by_name()
+        for table_name, ui_table in ui_by_table_name.items():
+            self.manipulator.remove_cards(table_name=table_name, ui_table=ui_table)
+
+    # Сохранение данных в Excel
+    def event_save_to_excel(self) -> int | None:
+        file_name = QFileDialog.getSaveFileName()[0] + ".xlsx"
+        if file_name == "":
+            return 0
+        self.excel_handler.save_to_excel(file_name)
+
+    # Загрузка данных из Excel
+    def event_load_data_to_excel(self) -> int | None:
+        file_name = QFileDialog.getOpenFileName()[0]
+        if file_name == "":
+            return 0
+        self.excel_handler.load_data_from_excel(file_name)
+        self.thread_add_cards()
+
 
 # Инцилизация окна приложения
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     ui = MyWin()
-    load_data()
+    eventor = Eventor(ui)
+    eventor.load_data()
     ui.show()
 
     # Привязка событий к кнопкам
-    ui.AddCards.clicked.connect(thread_add_cards)
-    ui.PriceReloadedCards.clicked.connect(thread_update_price)
-    ui.Recalculation.clicked.connect(event_price_recalculation)
-    ui.RemoveAllData.clicked.connect(event_remove_all_cards)
-    ui.PriceReloadedCard.clicked.connect(event_update_card)
-    ui.RemoveCard.clicked.connect(event_remove_card)
-    ui.LoadDataCards.clicked.connect(event_load_data_to_excel)
-    ui.SaveToExcel.clicked.connect(event_save_to_excel)
+    ui.AddCards.clicked.connect(eventor.thread_add_cards)
+    ui.PriceReloadedCards.clicked.connect(eventor.thread_update_price)
+    ui.Recalculation.clicked.connect(eventor.event_price_recalculation)
+    ui.RemoveAllData.clicked.connect(eventor.event_remove_all_cards)
+    ui.PriceReloadedCard.clicked.connect(eventor.event_update_card)
+    ui.RemoveCard.clicked.connect(eventor.event_remove_card)
+    ui.LoadDataCards.clicked.connect(eventor.event_load_data_to_excel)
+    ui.SaveToExcel.clicked.connect(eventor.event_save_to_excel)
 
     sys.exit(app.exec_())
