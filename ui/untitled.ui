@@ -350,26 +350,17 @@
        </layout>
       </widget>
      </item>
-     <item row="1" column="7" alignment="Qt::AlignRight">
-      <widget class="QLineEdit" name="DollarExchangeRate">
-       <property name="maximumSize">
-        <size>
-         <width>36</width>
-         <height>16777215</height>
-        </size>
-       </property>
+     <item row="1" column="6" alignment="Qt::AlignRight">
+      <widget class="QLabel" name="label_3">
        <property name="font">
         <font>
-         <pointsize>11</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
-         <italic>false</italic>
          <bold>true</bold>
-         <underline>false</underline>
-         <strikeout>false</strikeout>
         </font>
        </property>
        <property name="text">
-        <string>60</string>
+        <string>Курс доллара:</string>
        </property>
       </widget>
      </item>
@@ -687,20 +678,6 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="6" alignment="Qt::AlignRight">
-      <widget class="QLabel" name="label_3">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Курс доллара:</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="3" colspan="3">
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
@@ -713,6 +690,16 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="1" column="7">
+      <widget class="QSpinBox" name="DollarExchangeRate">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>9999</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
