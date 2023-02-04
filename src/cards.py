@@ -29,28 +29,31 @@ class CardManipulator:
     def _parse_and_append_to_tables(
         self, card_number: int, link: str, rate: float
     ) -> None:
-        card = Parse(url=link, rate=rate, card_number=card_number)
-        card_parses_by_name = self._get_classes_by_name()
-        site_name = self.ui.SiteList.currentText()
-        site_name_with_earth = site_name.replace(" ", "_")
-
         try:
+            Parse(url=link, rate=rate, card_number=card_number)
+            card_parses_by_name = self._get_classes_by_name()
+            site_name = self.ui.SiteList.currentText()
+            site_name_with_earth = site_name.replace(" ", "_")
+
             card = card_parses_by_name[site_name_with_earth](link, rate, card_number)
             card.parse()
+
+            try:
+                card_data = card.get_data_card()
+                db_table = DataBase(card_data)
+                db_table.add_card(site_name_with_earth)
+
+                ui_table = TableUI(card_data)
+                ui_table.add_card(self.get_ui_table_by_name()[site_name_with_earth])
+            except Exception:
+                self.ui.BrokenLinks.append(
+                    "Ошибка добавления данных о карте (Уже есть в БД)."
+                )
+
         except Exception:
             self.ui.BrokenLinks.append(link)
 
-        try:
-            card_data = card.get_data_card()
-            db_table = DataBase(card_data)
-            db_table.add_card(site_name_with_earth)
 
-            ui_table = TableUI(card_data)
-            ui_table.add_card(self.get_ui_table_by_name()[site_name_with_earth])
-        except Exception:
-            self.ui.BrokenLinks.append(
-                "Ошибка добавления данных о карте (Уже есть в БД)."
-            )
 
     def add_cards(
         self, cards_number: list[int], links: list[str], rate: float, length: int

@@ -26,7 +26,7 @@ class Parse:
 
     @abc.abstractmethod
     def parse(self) -> None:
-        ...
+        pass
 
     @staticmethod
     def _format_after_parse(text: str) -> str:

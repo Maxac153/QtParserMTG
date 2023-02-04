@@ -11,8 +11,6 @@ from src.excel.excel import ExcelHandler
 from src.initiation.initiation import load_data_in_table, load_data_config
 from src.cards import CardManipulator
 
-DOLLAR_DEFAULT_PRICE = 60.0
-
 
 class Sites(IntEnum):
     Star_City_Games = 0
@@ -34,13 +32,6 @@ class Eventor:
         tables = {site.value: (site.name, ui_table[site.name]) for site in Sites}
         return tables[index]
 
-    @staticmethod
-    def _validate_price() -> float:
-        price = ui.DollarExchangeRate.text()
-        if price.isdigit():
-            return float(price)
-        return DOLLAR_DEFAULT_PRICE
-
     # Загрузка данных в таблицы
     def load_data(self) -> None:
         ui_by_table_name = self.manipulator.get_ui_table_by_name()
@@ -55,7 +46,7 @@ class Eventor:
     def _event_add_cards(self) -> None:
         number_cards = ui.NumberCards.toPlainText().split()
         links = ui.LinkCards.toPlainText().split()
-        rate = self._validate_price()
+        rate = ui.DollarExchangeRate.value()
         length = len(number_cards)
         self.manipulator.add_cards(number_cards, links, rate, length)
 
@@ -68,7 +59,7 @@ class Eventor:
     # Обновление цены на карты
     def _event_price_update(self) -> None:
         bd_table, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
-        rate = float(self._validate_price())
+        rate = ui.DollarExchangeRate.value()
         ui_label = ui.NumberDownloadedLinks
         self.manipulator.update_cards_price(rate, ui_table, bd_table, ui_label)
 
@@ -79,14 +70,14 @@ class Eventor:
 
     # Перерасчёт цен
     def event_price_recalculation(self) -> None:
-        rate = float(self._validate_price())
+        rate = ui.DollarExchangeRate.value()
         ui_by_table_name = self.manipulator.get_ui_table_by_name()
         for table_name, ui_table in ui_by_table_name.items():
             self.manipulator.recalculation(rate, ui_table, table_name)
 
     # Обновление цены одной карты
     def event_update_card(self) -> None:
-        rate = int(self._validate_price())
+        rate = ui.DollarExchangeRate.value()
         table_name, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
         self.manipulator.price_update_card(rate, ui_table, table_name)
 

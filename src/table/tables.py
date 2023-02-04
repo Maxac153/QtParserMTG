@@ -21,8 +21,8 @@ class TableUI:
         ui_table.setRowCount(0)
 
     def update_price_card(self, ui_table, row):
-        ui_table.item(row, 3).setText(self.data_card[0])
-        ui_table.item(row, 4).setText(self.data_card[1])
+        ui_table.item(row, 3).setText(str(self.data_card[0]))
+        ui_table.item(row, 4).setText(str(self.data_card[1]))
 
     def recalculation(self, ui_table, row):
         ui_table.setItem(row, 4, QtWidgets.QTableWidgetItem(self.data_card))

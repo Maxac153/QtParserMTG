@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['ParsCard.py'],
+    ['ParseCard.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='ParsCard',
+    name='ParseCard',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
