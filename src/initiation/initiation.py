@@ -10,7 +10,7 @@ def load_data_in_table(table_name, table_ui):
     table.load_data_card(table_ui)
 
 def load_data_config(ui_rate, ui_tables, ui_list):
-    with open("src/initiation/data.config", "r") as file:
+    with open('src/initiation/data.config', 'r') as file:
         values = []
 
         for line in file:

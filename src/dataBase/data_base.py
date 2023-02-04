@@ -1,12 +1,11 @@
 import sqlite3 as sq
 
-
 class DataBase:
     def __init__(self, data_card=()):
         self.data_card = data_card
 
-    def add_card(self, table_name):
-        with sq.connect("src/dataBase/cards.db") as con:
+    def add_card(self, table_name: str = '') -> None:
+        with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -16,8 +15,8 @@ class DataBase:
                 self.data_card,
             )
 
-    def remove_card(self, table_name):
-        with sq.connect("src/dataBase/cards.db") as con:
+    def remove_card(self, table_name: str = '') -> None:
+        with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -27,8 +26,8 @@ class DataBase:
             """
             )
 
-    def remove_cards(self, table_name):
-        with sq.connect("src/dataBase/cards.db") as con:
+    def remove_cards(self, table_name: str = '') -> None:
+        with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -37,8 +36,8 @@ class DataBase:
             """
             )
 
-    def update_price_card(self, table_name, url):
-        with sq.connect("src/dataBase/cards.db") as con:
+    def update_price_card(self, table_name: str = '', url: str = '') -> None:
+        with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -48,8 +47,8 @@ class DataBase:
             """
             )
 
-    def recalculation(self, table_name, url):
-        with sq.connect("src/dataBase/cards.db") as con:
+    def recalculation(self, table_name: str = '', url: str = '') -> None:
+        with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -59,8 +58,8 @@ class DataBase:
             """
             )
 
-    def all_data_cards(self, table_name):
-        with sq.connect("src/dataBase/cards.db") as con:
+    def all_data_cards(self, table_name: str = '') -> None:
+        with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
