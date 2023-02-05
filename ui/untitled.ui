@@ -360,7 +360,7 @@
        </layout>
       </widget>
      </item>
-     <item row="3" column="9" alignment="Qt::AlignRight">
+     <item row="3" column="9" alignment="Qt::AlignHCenter">
       <widget class="QLabel" name="NumberDownloadedLinks">
        <property name="font">
         <font>
@@ -387,7 +387,7 @@
        </property>
       </spacer>
      </item>
-     <item row="1" column="8" alignment="Qt::AlignRight">
+     <item row="1" column="8" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
       <widget class="QPushButton" name="Recalculation">
        <property name="maximumSize">
         <size>
@@ -407,7 +407,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="9" alignment="Qt::AlignRight">
+     <item row="1" column="9" alignment="Qt::AlignHCenter">
       <widget class="QPushButton" name="PriceReloadedCards">
        <property name="maximumSize">
         <size>
@@ -420,7 +420,11 @@
          <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
+         <stylestrategy>PreferAntialias</stylestrategy>
         </font>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
        </property>
        <property name="text">
         <string>🗘</string>
@@ -479,7 +483,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>0</height>
+            <height>285</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -504,8 +508,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>283</width>
-             <height>175</height>
+             <width>268</width>
+             <height>221</height>
             </rect>
            </property>
            <attribute name="label">
@@ -524,7 +528,9 @@
                 </property>
                 <property name="font">
                  <font>
+                  <pointsize>10</pointsize>
                   <weight>50</weight>
+                  <italic>false</italic>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -534,7 +540,9 @@
                <widget class="QTextEdit" name="LinkCards">
                 <property name="font">
                  <font>
+                  <pointsize>10</pointsize>
                   <weight>50</weight>
+                  <italic>false</italic>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -546,6 +554,7 @@
                  <font>
                   <pointsize>10</pointsize>
                   <weight>50</weight>
+                  <italic>false</italic>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -560,6 +569,7 @@
                  <font>
                   <pointsize>10</pointsize>
                   <weight>75</weight>
+                  <italic>false</italic>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -574,6 +584,7 @@
                  <font>
                   <pointsize>10</pointsize>
                   <weight>75</weight>
+                  <italic>false</italic>
                   <bold>true</bold>
                  </font>
                 </property>
@@ -588,6 +599,7 @@
                  <font>
                   <pointsize>10</pointsize>
                   <weight>50</weight>
+                  <italic>false</italic>
                   <bold>false</bold>
                  </font>
                 </property>
@@ -605,8 +617,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>283</width>
-             <height>69</height>
+             <width>268</width>
+             <height>221</height>
             </rect>
            </property>
            <attribute name="label">
@@ -628,7 +640,9 @@
                   <widget class="QPushButton" name="SaveToExcel">
                    <property name="font">
                     <font>
+                     <pointsize>10</pointsize>
                      <weight>50</weight>
+                     <italic>false</italic>
                      <bold>false</bold>
                     </font>
                    </property>
