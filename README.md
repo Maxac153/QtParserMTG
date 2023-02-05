@@ -44,4 +44,4 @@
 
 ## Ссылки для скачивания образа:
 - Win10: https://drive.google.com/drive/folders/1uhbKDeVflzhq1C1IXs3DfskdX0zLIN8I?usp=sharing;
-- licux: https://drive.google.com/drive/folders/1-U582XKN_1L-_ozhqEDlCGYh426gJqbB?usp=sharing.
+- linux: https://drive.google.com/drive/folders/1-U582XKN_1L-_ozhqEDlCGYh426gJqbB?usp=sharing.
