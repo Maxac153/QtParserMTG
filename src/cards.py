@@ -1,9 +1,11 @@
 import math
+import os
+import multiprocessing
 from typing import Type
 
 from src.dataBase.data_base import DataBase
 from src.table.tables import TableUI
-from src.parse.parse import StarCityGamesParse, GoldFishParse, Parse
+from src.parse.parse import StarCityGamesParse, GoldFishParse
 from ui.ui_imagedialog import MyWin
 from PyQt5.QtWidgets import QTableWidget
 
@@ -26,40 +28,42 @@ class CardManipulator:
     def _get_classes_by_name() -> dict[str, Type[GoldFishParse | StarCityGamesParse]]:
         return {"Star_City_Games": StarCityGamesParse, "Gold_Fish": GoldFishParse}
 
-    def _parse_and_append_to_tables(
-        self, card_number: int, link: str, rate: float
-    ) -> None:
+    @classmethod
+    def parse_cards(self, args):
+        card_number, link, rate, f = args
         try:
-            Parse(url=link, rate=rate, card_number=card_number)
-            card_parses_by_name = self._get_classes_by_name()
-            site_name = self.ui.SiteList.currentText()
-            site_name_with_earth = site_name.replace(" ", "_")
-
-            card = card_parses_by_name[site_name_with_earth](link, rate, card_number)
-            card.parse()
-
-            try:
-                card_data = card.get_data_card()
-                db_table = DataBase(card_data)
-                db_table.add_card(site_name_with_earth)
-
-                ui_table = TableUI(card_data)
-                ui_table.add_card(self.get_ui_table_by_name()[site_name_with_earth])
-            except Exception:
-                self.ui.BrokenLinks.append(
-                    "Ошибка добавления данных о карте (Уже есть в БД)."
-                )
-
+            card = f(card_number, link, rate)
+            data_cards = card.parse()
+            return data_cards
         except Exception:
-            self.ui.BrokenLinks.append(link)
+            return f'Битая ссылка: {link}'
 
+    def add_data_cards_tabel(self, site_name_with_earth, data_cards):
+        for data_card in data_cards:
+            if type(data_card) == str:
+                self.ui.BrokenLinks.append(data_card)
+            else:
+                try:
+                    card_data = data_card
+                    db_table = DataBase(card_data)
+                    db_table.add_card(site_name_with_earth)
 
+                    ui_table = TableUI(card_data)
+                    ui_table.add_card(self.get_ui_table_by_name()[site_name_with_earth])
+                except Exception:
+                    self.ui.BrokenLinks.append(
+                        "Ошибка добавления данных о карте (Уже есть в БД)."
+                    )
 
     def add_cards(
-        self, cards_number: list[int], links: list[str], rate: float, length: int
+            self, cards_number: list[int], links: list[str], rate: float, length: int
     ) -> None:
         len_links = len(links)
         len_number_cards = len(cards_number)
+
+        card_parses_by_name = self._get_classes_by_name()
+        site_name = self.ui.SiteList.currentText()
+        site_name_with_earth = site_name.replace(" ", "_")
 
         if len_links != len_number_cards:
             self.ui.BrokenLinks.append(
@@ -67,9 +71,23 @@ class CardManipulator:
             )
             return
 
-        for count in range(length):
-            self._parse_and_append_to_tables(cards_number[count], links[count], rate)
-            self.ui.NumberDownloadedLinks.setText(f"{count + 1}/{length}")
+        data = [(cards_number[i], links[i], rate, card_parses_by_name[site_name_with_earth]) for i in range(len(links))]
+        cpu_core = os.cpu_count()
+        pool = multiprocessing.Pool(processes=cpu_core)
+
+        if length >= cpu_core:
+            for i in range(length // cpu_core):
+                data_card = data[i * cpu_core: i * cpu_core + cpu_core]
+                data_cards = pool.map(self.parse_cards, data_card)
+                self.add_data_cards_tabel(site_name_with_earth, data_cards)
+                self.ui.NumberDownloadedLinks.setText(f'{length}/{i * cpu_core + cpu_core}')
+
+        rest = length % cpu_core
+        if rest != 0:
+            data_card = data[-(length % cpu_core):]
+            data_cards = pool.map(self.parse_cards, data_card)
+            self.add_data_cards_tabel(site_name_with_earth, data_cards)
+            self.ui.NumberDownloadedLinks.setText(f'{length}/{length // cpu_core * cpu_core + rest}')
 
     # Изменение цены карт
     def recalculation(self, rate: float, ui_table: QTableWidget, table_name: str):
@@ -87,7 +105,7 @@ class CardManipulator:
 
     # Обновление цены
     def update_prices(
-        self, rate: float, row: int, table_name: str, ui_table: QTableWidget, url: str
+            self, rate: float, row: int, table_name: str, ui_table: QTableWidget, url: str
     ) -> None:
         classes_by_name = self._get_classes_by_name()
         card = classes_by_name[table_name](url, rate)
@@ -98,7 +116,7 @@ class CardManipulator:
         table.update_price_card(ui_table, row)
 
     def price_update_card(
-        self, rate: float, ui_table: QTableWidget, table_name: str
+            self, rate: float, ui_table: QTableWidget, table_name: str
     ) -> None:
         row = ui_table.currentRow()
         if row > -1:
@@ -107,11 +125,11 @@ class CardManipulator:
 
     # Обновление цен
     def update_cards_price(
-        self,
-        rate: float,
-        ui_table: QTableWidget,
-        table_name: str,
-        ui_label: QTableWidget,
+            self,
+            rate: float,
+            ui_table: QTableWidget,
+            table_name: str,
+            ui_label: QTableWidget,
     ) -> None:
         rows = ui_table.rowCount()
         for row in range(rows):

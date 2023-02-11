@@ -3,6 +3,7 @@ import requests
 import math
 import abc
 
+
 class Parse:
     name: str
     name_set: str
@@ -12,11 +13,7 @@ class Parse:
     rate: float
     soup: BeautifulSoup
 
-    @property
-    def price_ruble(self) -> float:
-        return math.ceil(self.price_dollar) * self.rate
-
-    def __init__(self, url: str = '', rate: float = 60, card_number: int = 1):
+    def __init__(self, card_number: int = 1, url: str = '', rate: float = 60):
         self.number_card = card_number
         self.url = url
         self.rate = rate
@@ -28,7 +25,7 @@ class Parse:
         pass
 
     @staticmethod
-    def _format_after_parse(text: str) -> str:
+    def _format_parse(text: str) -> str:
         return (
             text.replace('\n\n', ' ')
             .replace('\n', '')
@@ -36,7 +33,12 @@ class Parse:
             .replace('\xa0', ' ')
             .replace('\'', '')
             .replace('\xa0', ' ')
+            .replace('$', '')
         )
+
+    @property
+    def price_ruble(self) -> float:
+        return math.ceil(self.price_dollar) * self.rate
 
     def get_data_card(self) -> (str, str, str, float, float, str):
         return (
@@ -53,30 +55,17 @@ class Parse:
 
 
 class StarCityGamesParse(Parse):
-    # Парсинг данных с Star City Games
-    def parse(self) -> None:
-        self.name = self._format_after_parse(
-            self.soup.find('h1', class_='productView-title').text
-        )
-        if self.url[-2] == 'F':
-            self.name += ' (Foil)'
-        self.name_set = self.soup.find('title', class_='removeSKU').text.split('|')[1][
-            1:-1
-        ]
-        self.price_dollar = float(
-            self.soup.find('span', class_='price price--withoutTax').text[1:]
-        )
+    def parse(self) -> (str, str, str, float, float, str):
+        self.name = self._format_parse(self.soup.find('h1', class_='productView-title').text)
+        if self.url[-2] == 'F': self.name += ' (Foil)'
+        self.name_set = self.soup.find('title', class_='removeSKU').text.split('|')[1][1:-1]
+        self.price_dollar = float(self._format_parse(self.soup.find('span', class_='price price--withoutTax').text))
+        return self.get_data_card()
 
 
 class GoldFishParse(Parse):
-    # Парсинг данных с Gold Fish
-    def parse(self) -> None:
-        self.name = self._format_after_parse(
-            self.soup.find('div', class_='price-card-name-header-name').text[1:-1]
-        )
-        self.name_set = self._format_after_parse(
-            self.soup.find('span', class_='price-card-name-set-name').text[1:-1]
-        )
-        self.price_dollar = float(
-            self.soup.find('div', class_='price-box-price').text[2:]
-        )
+    def parse(self) -> (str, str, str, float, float, str):
+        self.name = self._format_parse(self.soup.find('div', class_='price-card-name-header-name').text[1:-1])
+        self.name_set = self._format_parse(self.soup.find('span', class_='price-card-name-set-name').text[1:-1])
+        self.price_dollar = float(self._format_parse(self.soup.find('div', class_='price-box-price').text))
+        return self.get_data_card()
