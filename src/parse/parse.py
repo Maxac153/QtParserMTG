@@ -4,7 +4,7 @@ import math
 import abc
 
 
-class Parse:
+class Parse(abc.ABC):
     name: str
     name_set: str
     price_dollar: float

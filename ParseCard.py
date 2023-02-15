@@ -57,15 +57,14 @@ class Eventor:
         thread.start()
 
     # Обновление цены на карты
-    def _event_price_update(self) -> None:
+    def _event_price_update_all_cards(self) -> None:
         bd_table, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
         rate = ui.DollarExchangeRate.value()
-        ui_label = ui.NumberDownloadedLinks
-        self.manipulator.update_cards_price(rate, ui_table, bd_table, ui_label)
+        self.manipulator.update_cards_prices(rate, ui_table)
 
     # Создание потока для обновление цен
-    def thread_update_price(self) -> None:
-        thread = Thread(target=self._event_price_update)
+    def thread_update_price_all_cards(self) -> None:
+        thread = Thread(target=self._event_price_update_all_cards)
         thread.start()
 
     # Перерасчёт цен
@@ -74,12 +73,6 @@ class Eventor:
         ui_by_table_name = self.manipulator.get_ui_table_by_name()
         for table_name, ui_table in ui_by_table_name.items():
             self.manipulator.recalculation(rate, ui_table, table_name)
-
-    # Обновление цены одной карты
-    def event_update_card(self) -> None:
-        rate = ui.DollarExchangeRate.value()
-        table_name, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
-        self.manipulator.price_update_card(rate, ui_table, table_name)
 
     # Уделение одной карты
     def event_remove_card(self) -> None:
@@ -118,10 +111,9 @@ if __name__ == "__main__":
 
     # Привязка событий к кнопкам
     ui.AddCards.clicked.connect(eventor.thread_add_cards)
-    ui.PriceReloadedCards.clicked.connect(eventor.thread_update_price)
+    ui.PriceReloadedCards.clicked.connect(eventor.thread_update_price_all_cards)
     ui.Recalculation.clicked.connect(eventor.event_price_recalculation)
     ui.RemoveAllData.clicked.connect(eventor.event_remove_all_cards)
-    ui.PriceReloadedCard.clicked.connect(eventor.event_update_card)
     ui.RemoveCard.clicked.connect(eventor.event_remove_card)
     ui.LoadDataCards.clicked.connect(eventor.event_load_data_to_excel)
     ui.SaveToExcel.clicked.connect(eventor.event_save_to_excel)

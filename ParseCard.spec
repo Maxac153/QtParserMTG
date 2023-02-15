@@ -41,5 +41,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['logo\\logo.ico'],
+    icon=['C:\\Users\\Turgor\\Desktop\\QtParserMTG\\logo\\logo.ico'],
 )
