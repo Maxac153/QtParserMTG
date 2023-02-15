@@ -1,10 +1,8 @@
 import sqlite3 as sq
 
 class DataBase:
-    def __init__(self, data_card=()):
-        self.data_card = data_card
-
-    def add_card(self, table_name: str = '') -> None:
+    @staticmethod
+    def add_card(data_card, table_name: str = '') -> None:
         with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
@@ -12,21 +10,23 @@ class DataBase:
                 INSERT INTO {table_name}
                 VALUES(?, ?, ?, ?, ?, ?) 
             """,
-                self.data_card,
+                data_card,
             )
 
-    def remove_card(self, table_name: str = '') -> None:
+    @staticmethod
+    def remove_card(data_card, table_name: str = '') -> None:
         with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
                 DELETE
                 FROM {table_name}
-                WHERE url = "{self.data_card[0]}"
+                WHERE url = "{data_card}"
             """
             )
 
-    def remove_cards(self, table_name: str = '') -> None:
+    @staticmethod
+    def remove_cards(table_name: str = '') -> None:
         with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
@@ -36,29 +36,31 @@ class DataBase:
             """
             )
 
-    def update_price_card(self, table_name: str = '', url: str = '') -> None:
+    @staticmethod
+    def update_price_card(data_card, table_name: str = '') -> None:
         with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
                 UPDATE {table_name}
-                SET price_dollar = "{self.data_card[0]}", price_ruble = "{self.data_card[1]}"
-                WHERE url = "{url}"
+                SET price_dollar = "{data_card[3]}", price_ruble = "{data_card[4]}"
+                WHERE url = "{data_card[5]}"
             """
             )
 
-    def recalculation(self, table_name: str = '', url: str = '') -> None:
+    @staticmethod
+    def recalculation(price_ruble, table_name: str = '', url: str = '') -> None:
         with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
                 UPDATE {table_name}
-                SET price_ruble = "{self.data_card}"
+                SET price_ruble = "{price_ruble}"
                 WHERE url = "{url}"
             """
             )
-
-    def all_data_cards(self, table_name: str = '') -> None:
+    @staticmethod
+    def all_data_cards(table_name: str = '') -> list[tuple[str, str, str, str, str, str]]:
         with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
@@ -67,5 +69,5 @@ class DataBase:
                 FROM {table_name}
             """
             )
-            rows = cur.fetchall()
-        return rows
+            data_cards = cur.fetchall()
+        return data_cards

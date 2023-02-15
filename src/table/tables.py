@@ -1,34 +1,39 @@
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QTableWidget
+from PyQt5 import QtWidgets
 
 
 class TableUI:
-    def __init__(self, data_card=()):
-        self.data_card = data_card
-
-    def add_card(self, ui_table):
+    @staticmethod
+    def add_card(data_card, ui_table):
         row_position = ui_table.rowCount()
         ui_table.insertRow(row_position)
 
-        for i in range(len(self.data_card)):
-            ui_table.setItem(row_position, i, QtWidgets.QTableWidgetItem(str(self.data_card[i])))
+        for i in range(len(data_card)):
+            ui_table.setItem(row_position, i, QtWidgets.QTableWidgetItem(str(data_card[i])))
 
-    def remove_card(self, ui_table, row):
+    @staticmethod
+    def update_price_cards(data_card, ui_table):
+        row_position = ui_table.rowCount()
+
+        for i in range(row_position):
+            ui_table.item(i, 3).setText(str(data_card[3]))
+            ui_table.item(i, 4).setText(str(data_card[4]))
+
+    @staticmethod
+    def recalculation(data_card, ui_table, row):
+        ui_table.setItem(row, 4, QtWidgets.QTableWidgetItem(data_card))
+
+    @staticmethod
+    def remove_card(ui_table, row):
         ui_table.removeRow(row)
         ui_table.selectionModel().clearCurrentIndex()
 
-    def remove_cards(self, ui_table):
+    @staticmethod
+    def remove_cards(ui_table):
         ui_table.setRowCount(0)
 
-    def update_price_card(self, ui_table, row):
-        ui_table.item(row, 3).setText(str(self.data_card[0]))
-        ui_table.item(row, 4).setText(str(self.data_card[1]))
-
-    def recalculation(self, ui_table, row):
-        ui_table.setItem(row, 4, QtWidgets.QTableWidgetItem(self.data_card))
-
-    def load_data_card(self, ui_table):
-        for item in self.data_card:
+    @staticmethod
+    def load_data_card(data_card, ui_table):
+        for item in data_card:
             row_position = ui_table.rowCount()
             ui_table.insertRow(row_position)
 
