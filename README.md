@@ -1,4 +1,4 @@
-# QtParserMTG
+# QtParserMTG 1.1
 
 ## О проекте
 
@@ -16,7 +16,7 @@
 - Pandas
 
 ## Запуск приложения
-<img src="img/launch.PNG" width="800" class="center">
+<img src="img/launch.PNG" width="800">
 
 Запустите exe файл приложения находящийся в папке ParsCard.
 
@@ -36,11 +36,12 @@
 ## Будущие изменения
 
 - [ ] Добавление multiprocessing, для ускорения парсинга;
-- [ ] Сделать сборку приложения под Linux;
+- [x] Сделать сборку приложения под Linux;
 - [ ] Сделать сборку приложения под Win7;
 - [ ] Собранный инсталлятора с помощью NSIS;
 - [ ] Добавить поис по названию и фильтры;
 - [x] Переделать взаимодействие с БД;
 
 ## Ссылки для скачивания образа:
-- Win10: https://drive.google.com/file/d/1odsZswSM0-ak4vtGnTUAaP1HEKJc1mqU/view?usp=sharing.
+- Win10: https://drive.google.com/drive/folders/1uhbKDeVflzhq1C1IXs3DfskdX0zLIN8I?usp=sharing;
+- linux: https://drive.google.com/drive/folders/1-U582XKN_1L-_ozhqEDlCGYh426gJqbB?usp=sharing.
