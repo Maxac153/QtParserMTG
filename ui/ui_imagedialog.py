@@ -256,7 +256,7 @@ class Ui_Form(object):
         self.horizontalLayout_3.addLayout(self.gridLayout_2)
         self.toolBox.addItem(self.page, "")
         self.page_2 = QtWidgets.QWidget()
-        self.page_2.setGeometry(QtCore.QRect(0, 0, 115, 64))
+        self.page_2.setGeometry(QtCore.QRect(0, 0, 283, 225))
         self.page_2.setObjectName("page_2")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.page_2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
@@ -293,6 +293,9 @@ class Ui_Form(object):
         self.BrokenLinks.setMaximumSize(QtCore.QSize(16777215, 50))
         self.BrokenLinks.setObjectName("BrokenLinks")
         self.verticalLayout.addWidget(self.BrokenLinks)
+        self.StopParse = QtWidgets.QPushButton(self.frame)
+        self.StopParse.setObjectName("StopParse")
+        self.verticalLayout.addWidget(self.StopParse)
         self.RemoveCard = QtWidgets.QPushButton(self.frame)
         font = QtGui.QFont()
         font.setPointSize(10)
@@ -355,6 +358,7 @@ class Ui_Form(object):
         self.SaveToExcel.setText(_translate("Form", "Excel"))
         self.toolBox.setItemText(self.toolBox.indexOf(self.page_2), _translate("Form", "Экспорт"))
         self.label_6.setText(_translate("Form", "Ошибки:"))
+        self.StopParse.setText(_translate("Form", "Остановить парсинг"))
         self.RemoveCard.setText(_translate("Form", "Удалить карту из таблицы"))
 
 class MyWin(QtWidgets.QWidget, Ui_Form):

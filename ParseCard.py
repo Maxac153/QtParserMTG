@@ -4,13 +4,13 @@ import sys
 from enum import IntEnum
 
 from PyQt5.QtWidgets import QApplication, QFileDialog, QTableWidget
-from threading import Thread
+from threading import Thread, Event
 
 from ui.ui_imagedialog import MyWin
 from src.excel.excel import ExcelHandler
 from src.initiation.initiation import load_data_in_table, load_data_config
 from src.cards import CardManipulator
-
+import time
 
 class Sites(IntEnum):
     Star_City_Games = 0
@@ -43,17 +43,17 @@ class Eventor:
         )
 
     # Добавление карт в UI и DB
-    def _event_add_cards(self) -> None:
+    def _event_add_cards(self, stop_parse) -> None:
         number_cards = ui.NumberCards.toPlainText().split()
         links = ui.LinkCards.toPlainText().split()
         rate = ui.DollarExchangeRate.value()
         length = len(number_cards)
-        self.manipulator.add_cards(number_cards, links, rate, length)
+        self.manipulator.add_cards(number_cards, links, rate, length, stop_parse)
 
     # Создание потока для добавления карт
     def thread_add_cards(self) -> None:
         ui.BrokenLinks.clear()
-        thread = Thread(target=self._event_add_cards)
+        thread = Thread(target=self._event_add_cards, args=(stop_parse,))
         thread.start()
 
     # Обновление цены на карты
@@ -100,6 +100,10 @@ class Eventor:
         self.excel_handler.load_data_from_excel(file_name)
         self.thread_add_cards()
 
+    # Остоновка парсинга
+    def event_stop_parse(self):
+        stop_parse.set()
+
 
 # Инцилизация окна приложения
 if __name__ == "__main__":
@@ -109,6 +113,9 @@ if __name__ == "__main__":
     eventor.load_data()
     ui.show()
 
+
+    stop_parse = Event()
+
     # Привязка событий к кнопкам
     ui.AddCards.clicked.connect(eventor.thread_add_cards)
     ui.PriceReloadedCards.clicked.connect(eventor.thread_update_price_all_cards)
@@ -117,5 +124,6 @@ if __name__ == "__main__":
     ui.RemoveCard.clicked.connect(eventor.event_remove_card)
     ui.LoadDataCards.clicked.connect(eventor.event_load_data_to_excel)
     ui.SaveToExcel.clicked.connect(eventor.event_save_to_excel)
+    ui.StopParse.clicked.connect(eventor.event_stop_parse)
 
     sys.exit(app.exec_())

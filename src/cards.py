@@ -49,11 +49,11 @@ class CardManipulator:
                     self.table_method(data_card, self.get_ui_table_by_name()[site_name_with_earth])
                 except Exception:
                     self.ui.BrokenLinks.append(
-                        "Ошибка добавления данных о карте (Уже есть в БД)."
+                        f"Ошибка добавления данных о карте (Уже есть в БД): {data_card[-1]}."
                     )
 
     # Добавление карты и обновление цен
-    def parse(self, cards_number, links, rate, length):
+    def parse(self, cards_number, links, rate, length, stop_parse):
         len_links = len(links)
         len_number_cards = len(cards_number)
 
@@ -72,6 +72,10 @@ class CardManipulator:
 
         if length >= self.cpu_core:
             for i in range(length // self.cpu_core):
+                if stop_parse.is_set():
+                    stop_parse.clear()
+                    return
+
                 data_card = data[i * self.cpu_core: i * self.cpu_core + self.cpu_core]
                 data_cards = pool.map(self.parse_cards, data_card)
                 self.add_data_cards_tabel(site_name_with_earth, data_cards)
@@ -85,11 +89,11 @@ class CardManipulator:
             self.ui.NumberDownloadedLinks.setText(f'{length}/{length // self.cpu_core * self.cpu_core + rest}')
 
     def add_cards(
-            self, cards_number: list[int], links: list[str], rate: int, length: int
+            self, cards_number: list[int], links: list[str], rate: int, length: int, stop_parse
     ) -> None:
         self.database_method = DataBase.add_card
         self.table_method = TableUI.add_card
-        self.parse(cards_number, links, rate, length)
+        self.parse(cards_number, links, rate, length, stop_parse)
 
     # Обновить цену всех карт
     def update_cards_prices(
