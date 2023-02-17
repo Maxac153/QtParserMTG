@@ -86,7 +86,7 @@ class CardManipulator:
             data_card = data[-(length % self.cpu_core):]
             data_cards = pool.map(self.parse_cards, data_card)
             self.add_data_cards_tabel(site_name_with_earth, data_cards)
-            self.ui.NumberDownloadedLinks.setText(f'{length}/{length // self.cpu_core * self.cpu_core + rest}')
+            self.ui.NumberDownloadedLinks.setText(f'{length // self.cpu_core * self.cpu_core + rest}/{length}')
 
     def add_cards(
             self, cards_number: list[int], links: list[str], rate: int, length: int, stop_parse
