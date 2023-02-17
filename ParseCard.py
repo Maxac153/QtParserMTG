@@ -111,7 +111,6 @@ if __name__ == "__main__":
     eventor.load_data()
     ui.show()
 
-
     stop_parse = Event()
 
     # Привязка событий к кнопкам
