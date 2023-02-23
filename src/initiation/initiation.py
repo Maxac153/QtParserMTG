@@ -1,4 +1,4 @@
-from src.dataBase.data_base import DataBase
+from src.database.database import DataBase
 from src.table.tables import TableUI
 
 # Загрузка данных из БД в таблицу

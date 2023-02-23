@@ -3,7 +3,7 @@ import os
 import multiprocessing
 from typing import Type
 
-from src.dataBase.data_base import DataBase
+from src.database.database import DataBase
 from src.table.tables import TableUI
 from src.parse.parse import StarCityGamesParse, GoldFishParse
 from ui.ui_imagedialog import MyWin
