@@ -49,14 +49,14 @@ class DataBase:
             )
 
     @staticmethod
-    def recalculation(price_ruble, table_name: str = '', url: str = '') -> None:
+    def recalculation(price_ruble, table_name: str = '', link: str = '') -> None:
         with sq.connect('src/dataBase/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
                 UPDATE {table_name}
                 SET price_ruble = "{price_ruble}"
-                WHERE url = "{url}"
+                WHERE url = "{link}"
             """
             )
     @staticmethod

@@ -16,7 +16,7 @@ class ExcelHandler:
         name_set = []
         price_dollar = []
         price_ruble = []
-        url = []
+        link = []
 
         rows = ui_table.rowCount()
         for row in range(rows):
@@ -25,7 +25,7 @@ class ExcelHandler:
             name_set.append(ui_table.item(row, 2).text())
             price_dollar.append(ui_table.item(row, 3).text())
             price_ruble.append(ui_table.item(row, 4).text())
-            url.append(ui_table.item(row, 5).text())
+            link.append(ui_table.item(row, 5).text())
 
         data_frame = pd.DataFrame(
             {
@@ -34,7 +34,7 @@ class ExcelHandler:
                 "Название сета": name_set,
                 "Цена в рублях": price_ruble,
                 "Цена в долларах": price_dollar,
-                "Ссылка": url,
+                "Ссылка": link,
             }
         )
 

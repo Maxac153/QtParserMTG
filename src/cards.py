@@ -21,13 +21,16 @@ class CardManipulator:
 
     def get_ui_table_by_name(self) -> dict[str, QTableWidget]:
         return {
-            "Star_City_Games": self.ui.TableStarCityGames,
-            "Gold_Fish": self.ui.TableGoldFish,
+            "StarCityGames": self.ui.TableStarCityGames,
+            "GoldFish": self.ui.TableGoldFish
         }
 
     @staticmethod
     def _get_classes_by_name() -> dict[str, Type[GoldFishParse | StarCityGamesParse]]:
-        return {"Star_City_Games": StarCityGamesParse, "Gold_Fish": GoldFishParse}
+        return {
+            "StarCityGames": StarCityGamesParse,
+            "GoldFish": GoldFishParse
+        }
 
     @staticmethod
     def parse_cards(args):
@@ -58,7 +61,7 @@ class CardManipulator:
         len_number_cards = len(cards_number)
 
         site_name = self.ui.SiteList.currentText()
-        site_name_with_earth = site_name.replace(" ", "_")
+        site_name_with_earth = site_name
         card_parses_by_name = self._get_classes_by_name()[site_name_with_earth]
 
         if len_links != len_number_cards:
@@ -66,7 +69,7 @@ class CardManipulator:
                 f"Ошибка размера: {len_number_cards}/{len_links}"
             )
             return
-
+        
         data = [(cards_number[i], links[i], rate, card_parses_by_name) for i in range(len(links))]
         pool = multiprocessing.Pool(processes=self.cpu_core)
 
@@ -79,14 +82,14 @@ class CardManipulator:
                 data_card = data[i * self.cpu_core: i * self.cpu_core + self.cpu_core]
                 data_cards = pool.map(self.parse_cards, data_card)
                 self.add_data_cards_tabel(site_name_with_earth, data_cards)
-                self.ui.NumberDownloadedLinks.setText(f'{length}/{i * self.cpu_core + self.cpu_core}')
+                self.ui.NumberDownloadedLinks.setText(f'{i * self.cpu_core + self.cpu_core}/{length}')
 
         rest = length % self.cpu_core
         if rest != 0:
             data_card = data[-(length % self.cpu_core):]
             data_cards = pool.map(self.parse_cards, data_card)
             self.add_data_cards_tabel(site_name_with_earth, data_cards)
-            self.ui.NumberDownloadedLinks.setText(f'{length // self.cpu_core * self.cpu_core + rest}/{length}')
+            self.ui.NumberDownloadedLinks.setText(f'{length}/{length}')
 
     def add_cards(
             self, cards_number: list[int], links: list[str], rate: int, length: int, stop_parse
@@ -115,12 +118,12 @@ class CardManipulator:
     def recalculation(self, rate: int, ui_table: QTableWidget, table_name: str):
         rows = ui_table.rowCount()
         for row in range(rows):
-            url = ui_table.item(row, 5).text()
+            link = ui_table.item(row, 5).text()
             price_dollar = ui_table.item(row, 3).text()
             price_ruble = str(math.ceil(float(price_dollar)) * int(rate))
 
             TableUI.recalculation(price_ruble, ui_table, row)
-            DataBase.recalculation(price_ruble, table_name, url)
+            DataBase.recalculation(price_ruble, table_name, link)
 
     # Удаление одной карты
     def remove_card(self, ui_table: QTableWidget, table_name: str) -> None:

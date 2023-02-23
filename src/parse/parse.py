@@ -9,15 +9,15 @@ class Parse(abc.ABC):
     name_set: str
     price_dollar: float
     number_card: int
-    url: str
+    link: str
     rate: float
     soup: BeautifulSoup
 
-    def __init__(self, card_number: int = 1, url: str = '', rate: float = 60):
+    def __init__(self, card_number: int = 1, link: str = '', rate: float = 60):
         self.number_card = card_number
-        self.url = url
+        self.link = link
         self.rate = rate
-        page = requests.get(self.url)
+        page = requests.get(self.link)
         self.soup = BeautifulSoup(page.text, 'html.parser')
 
     @abc.abstractmethod
@@ -47,7 +47,7 @@ class Parse(abc.ABC):
             self.name_set,
             self.price_dollar,
             self.price_ruble,
-            self.url,
+            self.link,
         )
 
     def get_data_card_prices(self) -> (float, float):
@@ -57,7 +57,7 @@ class Parse(abc.ABC):
 class StarCityGamesParse(Parse):
     def parse(self) -> (str, str, str, float, float, str):
         self.name = self._format_parse(self.soup.find('h1', class_='productView-title').text)
-        if self.url[-2] == 'F': self.name += ' (Foil)'
+        if self.link[-2] == 'F': self.name += ' (Foil)'
         self.name_set = self.soup.find('title', class_='removeSKU').text.split('|')[1][1:-1]
         self.price_dollar = float(self._format_parse(self.soup.find('span', class_='price price--withoutTax').text))
         return self.get_data_card()

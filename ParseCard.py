@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 import sys
+import multiprocessing
 from enum import IntEnum
 
 from PyQt5.QtWidgets import QApplication, QFileDialog, QTableWidget
@@ -10,11 +11,10 @@ from ui.ui_imagedialog import MyWin
 from src.excel.excel import ExcelHandler
 from src.initiation.initiation import load_data_in_table, load_data_config
 from src.cards import CardManipulator
-import time
 
 class Sites(IntEnum):
-    Star_City_Games = 0
-    Gold_Fish = 1
+    StarCityGames = 0
+    GoldFish = 1
 
 
 class Eventor:
@@ -81,9 +81,8 @@ class Eventor:
 
     # Удаление всех карт из Таблиц
     def event_remove_all_cards(self) -> None:
-        ui_by_table_name = self.manipulator.get_ui_table_by_name()
-        for table_name, ui_table in ui_by_table_name.items():
-            self.manipulator.remove_cards(table_name=table_name, ui_table=ui_table)
+        table_name, ui_table = self.get_site_by_index(ui.Tables.currentIndex())
+        self.manipulator.remove_cards(table_name=table_name, ui_table=ui_table)
 
     # Сохранение данных в Excel
     def event_save_to_excel(self) -> None:
@@ -102,15 +101,23 @@ class Eventor:
     def event_stop_parse(self):
         stop_parse.set()
 
+    def event_find_name_card(self):
+        name = ui.SearchByName.text().lower()
+        index_table = ui.Tables.currentIndex()
+        ui_table = ui.TableGoldFish if index_table else ui.TableStarCityGames
+        for row in range(ui_table.rowCount()):
+            item = ui_table.item(row, 1)
+            ui_table.setRowHidden(row, name not in item.text().lower())
+
 
 # Инцилизация окна приложения
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     app = QApplication(sys.argv)
     ui = MyWin()
     eventor = Eventor(ui)
     eventor.load_data()
     ui.show()
-
     stop_parse = Event()
 
     # Привязка событий к кнопкам
@@ -122,5 +129,7 @@ if __name__ == "__main__":
     ui.LoadDataCards.clicked.connect(eventor.event_load_data_to_excel)
     ui.SaveToExcel.clicked.connect(eventor.event_save_to_excel)
     ui.StopParse.clicked.connect(eventor.event_stop_parse)
+
+    ui.SearchByName.textChanged.connect(eventor.event_find_name_card)
 
     sys.exit(app.exec_())
