@@ -46,5 +46,5 @@
 - [ ] Написать свои исключения (для обработки ошибок парсинга).
 
 ## Ссылки для скачивания образа:
-- Win10: https://drive.google.com/drive/folders/1uhbKDeVflzhq1C1IXs3DfskdX0zLIN8I?usp=sharing;
-- linux: https://drive.google.com/drive/folders/1-U582XKN_1L-_ozhqEDlCGYh426gJqbB?usp=sharing.
+- Win10: https://drive.google.com/file/d/1GEc-WH_wX4OJJ1GYCzBXzdF0nJy6M6fi/view?usp=sharing;
+- linux: https://drive.google.com/file/d/13PMqJ5mlYHNnoeXo1IBbpFr22s18raqS/view?usp=sharing.
