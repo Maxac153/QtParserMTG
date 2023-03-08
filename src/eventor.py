@@ -81,13 +81,17 @@ class Eventor:
 
     # Сохранение данных в Excel
     def event_save_to_excel(self) -> None:
-        self.excel_handler.save_to_excel()
+        file_name = QFileDialog.getSaveFileName()[0]
+        if file_name == "":
+            return
+
+        self.excel_handler.save_to_excel(file_name)
 
     # Загрузка данных из Excel
-    def event_load_data_to_excel(self) -> int | None:
+    def event_load_data_to_excel(self) -> None:
         file_name = QFileDialog.getOpenFileName()[0]
         if file_name == "":
-            return 0
+            return
 
         self.excel_handler.load_data_from_excel(file_name)
         self.thread_add_cards()

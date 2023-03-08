@@ -41,7 +41,7 @@ class ExcelHandler:
         return data_frame
 
     # Сохранение данных в Excel
-    def save_to_excel(self):
+    def save_to_excel(self, file_name: str):
         data_frame1 = self.table_list(self.ui.TableStarCityGames)
         data_frame2 = self.table_list(self.ui.TableGoldFish)
 
@@ -50,14 +50,13 @@ class ExcelHandler:
             "GoldFish": data_frame2
         }
 
-        home = expanduser("~")
         for sheet_name in salary_shets.keys():
-            writer = pd.ExcelWriter(home + f'\\Desktop\\{sheet_name}.xlsx', engine="xlsxwriter")
+            writer = pd.ExcelWriter(file_name + f'_{sheet_name}.xlsx', engine="xlsxwriter")
             salary_shets[sheet_name].to_excel(writer, sheet_name=sheet_name, index=False)
             writer.close()
 
     # Загрузка данных из таблицы
-    def load_data_from_excel(self, file_name):
+    def load_data_from_excel(self, file_name: str):
         cards = pd.read_excel(file_name, usecols=range(6))
         for card in cards.values:
             self.ui.NumberCards.append(str(card[0]))
