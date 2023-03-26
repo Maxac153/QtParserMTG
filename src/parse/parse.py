@@ -31,7 +31,6 @@ class Parse(abc.ABC):
             .replace('\n', '')
             .replace('  ', '')
             .replace('\xa0', ' ')
-            .replace('\'', '')
             .replace('\xa0', ' ')
             .replace('$', '')
         )
