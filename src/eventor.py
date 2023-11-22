@@ -57,7 +57,7 @@ class Eventor:
 
         if len_links != len_number_cards:
             self.ui.BrokenLinks.append(
-                f"Ошибка размера: {len_number_cards}:{len_links}"
+                f"Ошибка размера: {len_links}/{len_number_cards}"
             )
             return
 
