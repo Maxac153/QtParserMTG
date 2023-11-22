@@ -48,6 +48,19 @@ class Eventor:
     # Создание потока для добавления карт
     def thread_add_cards(self) -> None:
         self.ui.BrokenLinks.clear()
+
+        number_cards = self.ui.NumberCards.toPlainText().split()
+        links = self.ui.LinkCards.toPlainText().split()
+
+        len_links = len(number_cards)
+        len_number_cards = len(links)
+
+        if len_links != len_number_cards:
+            self.ui.BrokenLinks.append(
+                f"Ошибка размера: {len_number_cards}:{len_links}"
+            )
+            return
+
         thread = Thread(target=self._event_add_cards, args=(Eventor.stop_parse,))
         thread.start()
 

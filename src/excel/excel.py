@@ -1,5 +1,4 @@
 import pandas as pd
-from os.path import expanduser
 from ui.ui_imagedialog import MyWin
 
 

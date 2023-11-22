@@ -57,21 +57,12 @@ class CardManipulator:
 
     # Добавление карты и обновление цен
     def parse(self, cards_number, links, rate, length, stop_parse):
-        len_links = len(links)
-        len_number_cards = len(cards_number)
-
         site_name = self.ui.SiteList.currentText()
         site_name_with_earth = site_name
         card_parses_by_name = self._get_classes_by_name()[site_name_with_earth]
-
-        if len_links != len_number_cards:
-            self.ui.BrokenLinks.append(
-                f"Ошибка размера: {len_number_cards}/{len_links}"
-            )
-            return
         
         data = [(cards_number[i], links[i], rate, card_parses_by_name) for i in range(len(links))]
-        pool = multiprocessing.Pool(processes=self.cpu_core)
+        pool = multiprocessing.Pool(processes=self.cpu_core - 1)
 
         if length >= self.cpu_core:
             for i in range(length // self.cpu_core):
