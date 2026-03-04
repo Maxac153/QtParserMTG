@@ -1,7 +1,9 @@
-from bs4 import BeautifulSoup
-import requests
-import math
 import abc
+import math
+import re
+
+import requests
+from bs4 import BeautifulSoup
 
 
 class Parse(abc.ABC):
@@ -26,14 +28,11 @@ class Parse(abc.ABC):
 
     @staticmethod
     def _format_parse(text: str) -> str:
-        return (
-            text.replace('\n\n', ' ')
-            .replace('\n', '')
-            .replace('  ', '')
-            .replace('\xa0', ' ')
-            .replace('\xa0', ' ')
-            .replace('$', '')
-        )
+        return re.sub(
+            r"\n\n|\n| {2,}|\xa0|\'|\$",
+            " ",
+            text
+        ).strip()
 
     @property
     def price_ruble(self) -> float:
@@ -56,7 +55,8 @@ class Parse(abc.ABC):
 class StarCityGamesParse(Parse):
     def parse(self) -> (str, str, str, float, float, str):
         self.name = self._format_parse(self.soup.find('h1', class_='productView-title').text)
-        if self.link[-2] == 'F': self.name += ' (Foil)'
+        if self.link[-2] == 'F':
+            self.name += ' (Foil)'
         self.name_set = self.soup.find('title', class_='removeSKU').text.split('|')[1][1:-1]
         self.price_dollar = float(self._format_parse(self.soup.find('span', class_='price price--withoutTax').text))
         return self.get_data_card()

@@ -1,24 +1,22 @@
+import math
+import re
+
 import pytest
 import requests
-import math
-from src.parse.parse import StarCityGamesParse, GoldFishParse
 from bs4 import BeautifulSoup
 
+from src.parse.parse import StarCityGamesParse, GoldFishParse
 
-link_star_city_games = 'https://starcitygames.com/prophetic-prism-sgl-mtg-cmr-334-enf/?sku=SGL-MTG-CMR-334-ENF1'
-link_gold_fish = 'https://www.mtggoldfish.com/price/The+Brothers+War:Foil/Loran+of+the+Third+Path#paper'
+LINK_STAR_CITY_GAMES = 'https://starcitygames.com/prophetic-prism-sgl-mtg-cmr-334-enf/?sku=SGL-MTG-CMR-334-ENF1'
+LINK_GOLD_FISH = 'https://www.mtggoldfish.com/price/The+Brothers+War:Foil/Loran+of+the+Third+Path#paper'
 
 
 def format_parse(text: str) -> str:
-    return (
-        text.replace('\n\n', ' ')
-        .replace('\n', '')
-        .replace('  ', '')
-        .replace('\xa0', ' ')
-        .replace('\'', '')
-        .replace('\xa0', ' ')
-        .replace('$', '')
-    )
+    return re.sub(
+        r"\n\n|\n| {2,}|\xa0|\'|\$",
+        " ",
+        text
+    ).strip()
 
 
 def price_ruble(price_dollar) -> float:
@@ -48,8 +46,8 @@ def parse_gold_fish(link):
 
 def test_parse_card_star_city_games():
     """Проверка парсинга одной карты Star City Games"""
-    res1 = parse_star_city_games(link_star_city_games)
-    res2 = StarCityGamesParse(link=link_star_city_games)
+    res1 = parse_star_city_games(LINK_STAR_CITY_GAMES)
+    res2 = StarCityGamesParse(link=LINK_STAR_CITY_GAMES)
     res2.parse()
     res2 = res2.get_data_card()
     assert res1 == res2
@@ -57,8 +55,8 @@ def test_parse_card_star_city_games():
 
 def test_parse_card_gold_fish():
     """Проверка парсинга одной карты Gold Fish"""
-    res1 = parse_gold_fish(link_gold_fish)
-    res2 = GoldFishParse(link=link_gold_fish)
+    res1 = parse_gold_fish(LINK_GOLD_FISH)
+    res2 = GoldFishParse(link=LINK_GOLD_FISH)
     res2.parse()
     res2 = res2.get_data_card()
     assert res1 == res2

@@ -1,9 +1,10 @@
 import sqlite3 as sq
 
+
 class DataBase:
     @staticmethod
     def add_card(data_card, table_name: str = '') -> None:
-        with sq.connect('src/database/cards.db') as con:
+        with sq.connect('resources/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -15,7 +16,7 @@ class DataBase:
 
     @staticmethod
     def remove_card(data_card, table_name: str = '') -> None:
-        with sq.connect('src/database/cards.db') as con:
+        with sq.connect('resources/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -27,7 +28,7 @@ class DataBase:
 
     @staticmethod
     def remove_cards(table_name: str = '') -> None:
-        with sq.connect('src/database/cards.db') as con:
+        with sq.connect('resources/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -38,7 +39,7 @@ class DataBase:
 
     @staticmethod
     def update_price_card(data_card, table_name: str = '') -> None:
-        with sq.connect('src/database/cards.db') as con:
+        with sq.connect('resources/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -50,7 +51,7 @@ class DataBase:
 
     @staticmethod
     def recalculation(price_ruble, table_name: str = '', link: str = '') -> None:
-        with sq.connect('src/database/cards.db') as con:
+        with sq.connect('resources/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""
@@ -59,9 +60,10 @@ class DataBase:
                 WHERE url = "{link}"
             """
             )
+
     @staticmethod
     def all_data_cards(table_name: str = '') -> list[tuple[str, str, str, str, str, str]]:
-        with sq.connect('src/database/cards.db') as con:
+        with sq.connect('resources/cards.db') as con:
             cur = con.cursor()
             cur.execute(
                 f"""

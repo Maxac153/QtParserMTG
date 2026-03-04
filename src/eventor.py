@@ -1,15 +1,18 @@
-from src.excel.excel import ExcelHandler
-from src.initiation.initiation import load_data_in_table, load_data_config
-from src.cards import CardManipulator
+from enum import IntEnum
+from threading import Event, Thread
 
 from PyQt5.QtWidgets import QFileDialog, QTableWidget
+
+from src.cards import CardManipulator
+from src.excel.excel import ExcelHandler
+from src.initiation.initiation import load_data_in_table, load_data_config
 from ui.ui_imagedialog import MyWin
-from threading import Event, Thread
-from enum import IntEnum
+
 
 class Sites(IntEnum):
     StarCityGames = 0
     GoldFish = 1
+
 
 class Eventor:
     manipulator: CardManipulator
@@ -70,7 +73,7 @@ class Eventor:
         rate = self.ui.DollarExchangeRate.value()
         self.manipulator.update_cards_prices(rate, ui_table)
 
-    # Создание потока для обновление цен
+    # Создание потока для обновления цен
     def thread_update_price_all_cards(self) -> None:
         thread = Thread(target=self._event_price_update_all_cards)
         thread.start()
@@ -82,7 +85,7 @@ class Eventor:
         for table_name, ui_table in ui_by_table_name.items():
             self.manipulator.recalculation(rate, ui_table, table_name)
 
-    # Уделение одной карты
+    # Удаление одной карты
     def event_remove_card(self) -> None:
         table_name, ui_table = self.get_site_by_index(self.ui.Tables.currentIndex())
         self.manipulator.remove_card(ui_table, table_name)
@@ -109,8 +112,9 @@ class Eventor:
         self.excel_handler.load_data_from_excel(file_name)
         self.thread_add_cards()
 
-    # Остоновка парсинга
-    def event_stop_parse(self):
+    # Остановка парсинга
+    @staticmethod
+    def event_stop_parse():
         Eventor.stop_parse.set()
 
     def event_find_name_card(self):
@@ -120,4 +124,3 @@ class Eventor:
         for row in range(ui_table.rowCount()):
             item = ui_table.item(row, 1)
             ui_table.setRowHidden(row, name not in item.text().lower())
-

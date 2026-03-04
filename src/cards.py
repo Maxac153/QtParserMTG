@@ -1,13 +1,14 @@
 import math
-import os
 import multiprocessing
+import os
 from typing import Type
 
-from src.database.database import DataBase
-from src.table.tables import TableUI
-from src.parse.parse import StarCityGamesParse, GoldFishParse
-from ui.ui_imagedialog import MyWin
 from PyQt5.QtWidgets import QTableWidget
+
+from src.database.database import DataBase
+from src.parse.parse import StarCityGamesParse, GoldFishParse
+from src.table.tables import TableUI
+from ui.ui_imagedialog import MyWin
 
 
 class CardManipulator:
@@ -60,7 +61,7 @@ class CardManipulator:
         site_name = self.ui.SiteList.currentText()
         site_name_with_earth = site_name
         card_parses_by_name = self._get_classes_by_name()[site_name_with_earth]
-        
+
         data = [(cards_number[i], links[i], rate, card_parses_by_name) for i in range(len(links))]
         pool = multiprocessing.Pool(processes=self.cpu_core - 1)
 

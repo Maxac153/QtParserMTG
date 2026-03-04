@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-import sys
 import multiprocessing
+import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from ui.ui_imagedialog import MyWin
 from src.eventor import Eventor
+from ui.ui_imagedialog import MyWin
 
-# Инцилизация окна приложения
+# Инициализация окна приложения
 if __name__ == "__main__":
     multiprocessing.freeze_support()
     app = QApplication(sys.argv)
@@ -26,7 +26,6 @@ if __name__ == "__main__":
     ui.LoadDataCards.clicked.connect(eventor.event_load_data_to_excel)
     ui.SaveToExcel.clicked.connect(eventor.event_save_to_excel)
     ui.StopParse.clicked.connect(eventor.event_stop_parse)
-
     ui.SearchByName.textChanged.connect(eventor.event_find_name_card)
 
     sys.exit(app.exec_())

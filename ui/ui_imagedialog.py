@@ -17,7 +17,7 @@ class Ui_Form(object):
         Form.resize(800, 600)
         Form.setMinimumSize(QtCore.QSize(800, 600))
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("../logo/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("./logo/logo.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         Form.setWindowIcon(icon)
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(Form)
         self.verticalLayout_6.setContentsMargins(3, 3, 3, 3)
@@ -379,18 +379,18 @@ class Ui_Form(object):
         self.label_7.setText(_translate("Form", "Поиск по названию:"))
         self.SearchByName.setPlaceholderText(_translate("Form", "Поиск..."))
 
+
 class MyWin(QtWidgets.QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-
 
     def closeEvent(self, event):
         rate = self.DollarExchangeRate.text()
         list_index = self.SiteList.currentIndex()
         tables_index = self.Tables.currentIndex()
 
-        with open("src/initiation/data.config", "w") as file:
+        with open("resources/data.config", "w") as file:
             file.write(f'DollarExchangeRate: {rate}\n')
             file.write(f'Tables: {tables_index}\n')
             file.write(f'SiteList: {list_index}')

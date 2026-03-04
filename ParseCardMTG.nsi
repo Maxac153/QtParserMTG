@@ -8,9 +8,9 @@ Section "ParsCard (required)"
   SectionIn RO
   SetOutPath $INSTDIR
   
-  File /r "C:\Users\Turgor\Desktop\dist\logo"
-  File /r "C:\Users\Turgor\Desktop\dist\src"
-  File "C:\Users\Turgor\Desktop\dist\ParsCard.exe"
+  File /r "Desktop\dist\logo"
+  File /r "Desktop\dist\src"
+  File "Desktop\dist\ParsCard.exe"
   
   WriteRegStr HKLM SOFTWARE\ParsCard "Install_Dir" "$INSTDIR"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ParsCard" "DisplayName" "ParsCard"
