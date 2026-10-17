@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% macro job_panel(j) %}
+  <section class="panel job" id="job-{{ j.id }}" data-job-id="{{ j.id }}" data-status="{{ j.status }}">
+    <div class="job-head">
+      <strong>{{ j.title }}</strong>
+      <span class="job-status" data-role="status">
+        {%- if j.status == "running" %}идёт{% elif j.status == "cancelled" %}остановлено{% else %}готово{% endif -%}
+      </span>
+    </div>
+    <progress max="{{ j.total or 1 }}" value="{{ j.done }}" data-role="progress"></progress>
+    <div class="job-counts" data-role="counts">
+      Обработано {{ j.done }} из {{ j.total }}, успешно {{ j.succeeded }}, ошибок {{ j.errors|length }}
+    </div>
+    {% if j.status == "running" %}
+      <form method="post" action="/jobs/{{ j.id }}/cancel" data-role="cancel">
+        <button type="submit" class="secondary">Остановить</button>
+      </form>
+    {% endif %}
+    <ul class="job-errors" data-role="errors">
+      {% for error in j.errors %}<li>{{ error }}</li>{% endfor %}
+    </ul>
+  </section>
+{% endmacro %}
+
+{% block content %}
+<header class="top">
+  <h1>Цены MTG</h1>
+  <form method="post" action="/settings/rate" class="inline">
+    <input type="hidden" name="site" value="{{ site }}">
+    <label for="rate">Курс $ → ₽</label>
+    <input id="rate" name="rate" type="text" inputmode="decimal" value="{{ rate|amount }}" size="7" required>
+    <button type="submit" class="secondary">Сохранить</button>
+  </form>
+  <form method="post" action="/settings/rate/cbr">
+    <input type="hidden" name="site" value="{{ site }}">
+    <button type="submit" class="secondary" title="Загрузить официальный курс ЦБ РФ">Курс ЦБ</button>
+  </form>
+  <a class="button secondary" href="/export.xlsx">Скачать Excel</a>
+</header>
+
+<details class="panel settings">
+  <summary>Автообновление{% if auto.refresh_hours %}: цены каждые {{ auto.refresh_hours }} ч{% endif %}{% if auto.auto_rate %}, курс ЦБ{% endif %}</summary>
+  <form method="post" action="/settings/auto" class="inline">
+    <input type="hidden" name="site" value="{{ site }}">
+    <label for="refresh_hours">Обновлять все цены каждые</label>
+    <input id="refresh_hours" name="refresh_hours" type="number" min="0" max="720" value="{{ auto.refresh_hours }}">
+    <span>ч (0 — выключено)</span>
+    <label><input type="checkbox" name="auto_rate" value="1" {% if auto.auto_rate %}checked{% endif %}> брать курс ЦБ РФ автоматически</label>
+    <button type="submit" class="secondary">Сохранить</button>
+  </form>
+  <p class="muted">Работает, пока запущен сайт. Последнее автообновление цен: {{ auto.last_refresh|time }}, курса: {{ auto.last_rate_update|time }}.</p>
+</details>
+
+{% if notice %}
+  <p class="notice notice-{{ notice[0] }}" role="status">{{ notice[1] }}</p>
+{% endif %}
+
+{% if job %}{{ job_panel(job) }}{% endif %}
+{% for j in running_jobs %}{{ job_panel(j) }}{% endfor %}
+
+<section class="panel add">
+  <form method="post" action="/cards/add" class="add-form">
+    <label for="links">Добавить карты: по строке на карту, «количество ссылка» (количество можно не писать)</label>
+    <textarea id="links" name="links" rows="4" placeholder="2 https://www.mtggoldfish.com/price/...&#10;https://starcitygames.com/...?sku=..."></textarea>
+    <button type="submit">Добавить</button>
+  </form>
+  <form method="post" action="/cards/import" enctype="multipart/form-data" class="inline import-form">
+    <label for="file">или загрузить .xlsx</label>
+    <input id="file" name="file" type="file" accept=".xlsx" required>
+    <button type="submit" class="secondary">Импорт</button>
+  </form>
+</section>
+
+<nav class="tabs">
+  {% for s in sites %}
+    <a href="/?site={{ s }}" class="tab{% if s == site %} active{% endif %}">{{ s.label }} <span class="count">{{ counts[s] }}</span></a>
+  {% endfor %}
+</nav>
+
+<section class="panel">
+  <div class="toolbar">
+    <form method="get" action="/" class="inline search">
+      <input type="hidden" name="site" value="{{ site }}">
+      <input type="search" name="q" value="{{ q }}" placeholder="Поиск по названию или сету" aria-label="Поиск">
+      <button type="submit" class="secondary">Найти</button>
+      {% if q %}<a href="/?site={{ site }}">сбросить</a>{% endif %}
+    </form>
+    <div class="inline">
+      <form method="post" action="/sites/{{ site }}/refresh">
+        <button type="submit" class="secondary" {% if not counts[site] %}disabled{% endif %}>Обновить все цены</button>
+      </form>
+      <form method="post" action="/sites/{{ site }}/delete" data-confirm="Удалить все карты {{ site.label }}?">
+        <button type="submit" class="danger" {% if not counts[site] %}disabled{% endif %}>Удалить все</button>
+      </form>
+    </div>
+  </div>
+
+  {% if cards %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Кол-во</th><th>Название</th><th>Сет</th>
+          <th class="num">$</th><th class="num">Изм.</th><th class="num">₽</th>
+          {% if show_tix %}<th class="num">tix</th>{% endif %}
+          <th>Обновлено</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for card in cards %}
+        <tr{% if card.last_error %} class="has-error"{% endif %}>
+          <td>
+            <form method="post" action="/cards/{{ card.id }}/quantity" class="qty">
+              <input type="hidden" name="q" value="{{ q }}">
+              <input type="number" name="quantity" min="1" value="{{ card.quantity }}" aria-label="Количество">
+              <button type="submit" class="icon" title="Сохранить количество">✓</button>
+            </form>
+          </td>
+          <td>
+            <a href="/cards/{{ card.id }}">{{ card.name }}</a>
+            <a href="{{ card.url }}" target="_blank" rel="noopener noreferrer" class="external" title="Открыть на сайте магазина">↗</a>
+            {% if card.last_error %}<div class="row-error">{{ card.last_error }}</div>{% endif %}
+          </td>
+          <td>{{ card.set_name }}</td>
+          <td class="num">{% if card.price_usd is not none %}{{ card.price_usd|amount }}{% else %}—{% endif %}</td>
+          <td class="num">{% set change = price_change(card) %}{% if change %}<span class="change {{ change[0] }}">{{ change[1] }}</span>{% endif %}</td>
+          <td class="num">{% if card.price_usd is not none %}{{ ruble_price(card.price_usd, rate)|amount }}{% else %}—{% endif %}</td>
+          {% if show_tix %}<td class="num">{% if card.price_tix is not none %}{{ card.price_tix|amount }}{% endif %}</td>{% endif %}
+          <td class="muted">{{ card.updated_at|time }}</td>
+          <td class="actions">
+            <form method="post" action="/cards/{{ card.id }}/refresh">
+              <input type="hidden" name="q" value="{{ q }}">
+              <button type="submit" class="icon" title="Обновить цену">⟳</button>
+            </form>
+            <form method="post" action="/cards/{{ card.id }}/delete" data-confirm="Удалить «{{ card.name }}»?">
+              <input type="hidden" name="q" value="{{ q }}">
+              <button type="submit" class="icon danger" title="Удалить">✕</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>{{ totals.quantity }}</td><td colspan="2">Итого{% if q %} по найденным{% endif %}</td>
+          <td class="num">{{ totals.usd|amount }}</td><td></td><td class="num">{{ totals.rub|amount }}</td>
+          <td colspan="{{ 3 if show_tix else 2 }}"></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  {% else %}
+    <p class="empty">{% if q %}Ничего не найдено.{% else %}На этой вкладке пока нет карт.{% endif %}</p>
+  {% endif %}
+</section>
+{% endblock %}
