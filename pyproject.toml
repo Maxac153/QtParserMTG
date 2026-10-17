@@ -1,20 +1,58 @@
-[tool.poetry]
-name = "myproject"
-version = "0.1.0"
-description = ""
-authors = ["Maxac <maxac153@gmail.com>"]
+[project]
+name = "mtgprices"
+version = "2.0.0"
+description = "Локальный сайт для учёта цен карт Magic: The Gathering (StarCityGames, MTGGoldfish)"
 readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "jinja2>=3.1",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27",
+    "beautifulsoup4>=4.12",
+    "openpyxl>=3.1",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.12"
-pyqt5 = ">=5.15.9,<5.16.0"
-pandas = ">=1.5.3,<1.6.0"
-requests = ">=2.25.1,<2.26.0"
-beautifulsoup4 = ">=4.11.2,<4.12.0"
-pytest = ">=7.2.2,<7.3.0"
-xlsxwriter = "^3.0.9"
-openpyxl = "^3.1"
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "types-openpyxl",
+]
+build = [
+    "pyinstaller>=6.10",
+]
+
+[project.scripts]
+mtgprices = "mtgprices.__main__:main"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mtgprices"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["network: тесты, которые ходят на настоящие сайты (запуск: pytest -m network)"]
+addopts = "-m 'not network'"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+# Русский текст в строках и комментариях: «×», «х» и т. п. — не опечатки
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["mtgprices"]
+strict_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+check_untyped_defs = true
